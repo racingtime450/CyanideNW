@@ -1,0 +1,57 @@
+const AUTH_KEY = 'cnayinenw_user';
+
+function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function setUser(user) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+}
+
+function logout() {
+  localStorage.removeItem(AUTH_KEY);
+  window.location.href = '/';
+}
+
+function updateUserUI() {
+  const user = getUser();
+  const heroUser = document.querySelector('.hero-user');
+  const navRegister = document.querySelector('.nav-register');
+  const navLogin = document.querySelector('.nav-login');
+
+  if (heroUser) {
+    if (user) {
+      heroUser.innerHTML = `
+        <img class="avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(user.username)}/32" alt="">
+        <span id="heroUsername">${user.username}</span>
+      `;
+    } else {
+      heroUser.innerHTML = `
+        <img class="avatar" src="https://mc-heads.net/avatar/Steve/32" alt="">
+        <span id="heroUsername">Misafir</span>
+      `;
+    }
+  }
+
+  if (navRegister && navLogin) {
+    if (user) {
+      navRegister.style.display = 'none';
+      navLogin.textContent = `${user.username} · Çıkış`;
+      navLogin.href = '#';
+      navLogin.onclick = (e) => { e.preventDefault(); logout(); };
+    } else {
+      navRegister.style.display = '';
+      navRegister.textContent = 'Kayıt Ol';
+      navRegister.href = '/register.html';
+      navLogin.textContent = 'Giriş Yap';
+      navLogin.href = '/login.html';
+      navLogin.onclick = null;
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', updateUserUI);
